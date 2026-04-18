@@ -1,0 +1,53 @@
+version: "3.9"
+
+services:
+  # ── Frontend (React + Nginx + SSL) ──
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: botpilot-frontend
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - backend
+    volumes:
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+      - certbot-webroot:/var/www/certbot
+    restart: unless-stopped
+
+  # ── Backend (FastAPI + Uvicorn) ──
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: botpilot-backend
+    expose:
+      - "8000"
+    environment:
+      - SMTP_HOST=smtp.gmail.com
+      - SMTP_PORT=587
+      - SMTP_USER=${SMTP_USER:-}
+      - SMTP_PASS=${SMTP_PASS:-}
+    volumes:
+      - backend-data:/app/data
+    restart: unless-stopped
+
+  # ── Certbot (SSL certificate manager) ──
+  certbot:
+    image: certbot/certbot
+    container_name: botpilot-certbot
+    volumes:
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+      - certbot-webroot:/var/www/certbot
+    depends_on:
+      - frontend
+
+volumes:
+  backend-data:
+  certbot-etc:
+  certbot-var:
+  certbot-webroot:
