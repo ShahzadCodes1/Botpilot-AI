@@ -40,20 +40,6 @@ Built with a focus on scalability, clean architecture, and intelligent automatio
 - AI Integrations
 
 ---
-
-# 📸 Preview
-
-> Add project screenshots here
-
-```md
-screenshots/
-├── dashboard.png
-├── chatbot.png
-└── analytics.png
-```
-
----
-
 # ⚙️ Installation
 
 ```bash
